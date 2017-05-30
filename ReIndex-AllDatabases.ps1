@@ -82,21 +82,23 @@ workflow Update-SQLIndexRunbook
     $SqlUsername = $SqlCredential.UserName 
     $SqlPass = $SqlCredential.GetNetworkCredential().Password
     
-    #Make connection
-	$Conn = New-Object System.Data.SqlClient.SqlConnection("Server=tcp:$using:SqlServer,$using:SqlServerPort;Database=master;User ID=$using:SqlUsername;Password=$using:SqlPass;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;")
-	$Conn.Open()
-	
-	#SQL Command to find DBs
-	$SQLCommandString = "SELECT name FROM sys.sysdatabases where name != 'master'"
-	
-	#Execute SQL Command for DB names
-	$Cmd = new-object system.Data.SqlClient.SqlCommand($SQLCommandString, $Conn)
-    $Cmd.CommandTimeout = 120
-	$DatabaseQuery = New-Object system.Data.DataSet
-    $Da = New-Object system.Data.SqlClient.SqlDataAdapter($Cmd)
-    [void]$Da.fill($DatabaseQuery)
-	$Conn.Close()
-	#Iterate through and do the indexing where necessary (untouched)
+	InlineScript {
+		#Make connection
+		$Conn = New-Object System.Data.SqlClient.SqlConnection("Server=tcp:$using:SqlServer,$using:SqlServerPort;Database=master;User ID=$using:SqlUsername;Password=$using:SqlPass;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;")
+		$Conn.Open()
+		
+		#SQL Command to find DBs
+		$SQLCommandString = "SELECT name FROM sys.sysdatabases where name != 'master'"
+		
+		#Execute SQL Command for DB names
+		$Cmd = new-object system.Data.SqlClient.SqlCommand($SQLCommandString, $Conn)
+		$Cmd.CommandTimeout = 120
+		$DatabaseQuery = New-Object system.Data.DataSet
+		$Da = New-Object system.Data.SqlClient.SqlDataAdapter($Cmd)
+		[void]$Da.fill($DatabaseQuery)
+		$Conn.Close()
+		#Iterate through and do the indexing where necessary (untouched)
+	}
 	ForEach ($TableName in $DatabaseQuery.Tables.Name)
 	{
 	
