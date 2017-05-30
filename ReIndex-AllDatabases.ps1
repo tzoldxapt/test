@@ -49,7 +49,7 @@
     AUTHOR: System Center Automation Team
     LASTEDIT: Oct 8th, 2014 
 #>
-workflow Update-SQLIndexRunbook
+workflow ReIndex-AllDatabases
 {
     param(
         [parameter(Mandatory=$True)]
